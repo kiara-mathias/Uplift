@@ -2,7 +2,21 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Alert, FlatList, Image, KeyboardAvoidingView, Platform, ScrollView, StatusBar, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import * as Progress from 'react-native-progress';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -76,11 +90,11 @@ export default function Academic() {
     .catch(err => console.log(err));
   };
 
-  const incrementProgress = (id) => {
+  const incrementProgress = (id, by = 10) => {
     setSubjects(prev =>
       prev.map(sub => {
         if (sub.id === id) {
-          const newProgress = Math.min(sub.progress + 10, 100);
+          const newProgress = Math.min(sub.progress + by, 100);
           axios.put(`${BACKEND_URL}/subjects/${id}`, { ...sub, progress: newProgress })
             .catch(err => console.log(err));
           return { ...sub, progress: newProgress };
@@ -175,6 +189,7 @@ export default function Academic() {
             </View>
           </View>
 
+          {/* Progress Bar */}
           <Progress.Bar
             progress={item.progress / 100}
             width={null}
@@ -184,12 +199,27 @@ export default function Academic() {
           />
           <Text style={{marginTop:5, color: current.secondaryText}}>{item.progress}% completed</Text>
 
-          <View style={{flexDirection:'row', marginTop:5}}>
-            {[1,2,3,4,5].map(day => (
-              <View key={day} style={{
-                width: 12, height:12, borderRadius:6, marginRight:5,
-                backgroundColor: day <= Math.ceil(item.progress / 20) ? (difficultyColors[item.difficulty] || current.accent) : '#ccc'
-              }}/>
+          {/* Weekly Checklist with Day Labels */}
+          <View style={{flexDirection:'row', alignItems:'center', marginTop:5}}>
+            {['M','T','W','Th','F'].map((day, idx) => (
+              <TouchableOpacity
+                key={idx}
+                onPress={() => incrementProgress(item.id, 20)}
+                style={{
+                  alignItems:'center',
+                  marginRight:8
+                }}
+              >
+                <View style={{
+                  width: 16,
+                  height:16,
+                  borderRadius:8,
+                  backgroundColor: idx+1 <= Math.ceil(item.progress / 20)
+                    ? (difficultyColors[item.difficulty] || current.accent)
+                    : '#ccc'
+                }}/>
+                <Text style={{color: current.secondaryText, fontSize:10, marginTop:2}}>{day}</Text>
+              </TouchableOpacity>
             ))}
           </View>
         </>
@@ -208,8 +238,7 @@ export default function Academic() {
             <View style={{flexDirection:'row', alignItems:'center'}}>
               <Text style={[styles.dashboardTitle, { color: current.text }]}>Academic Dashboard</Text>
               <Image 
-                source={require('../../assets/images/undraw_studying.png')
-} 
+                source={require('../../assets/images/undraw_studying.png')} 
                 style={styles.profileImage} 
               />
             </View>
