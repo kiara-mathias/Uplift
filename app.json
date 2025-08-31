@@ -4,7 +4,7 @@
     "slug": "my-uplift-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/undraw_watching-reels_53wl.png",
     "scheme": "myupliftapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
