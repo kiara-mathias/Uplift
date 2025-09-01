@@ -238,7 +238,7 @@ export default function Academic() {
             <View style={{flexDirection:'row', alignItems:'center'}}>
               <Text style={[styles.dashboardTitle, { color: current.text }]}>Academic Dashboard</Text>
               <Image 
-                source={require('../../assets/images/undraw_studying.png')} 
+                source={require('../../../assets/images/undraw_studying.png')} 
                 style={styles.profileImage} 
               />
             </View>
