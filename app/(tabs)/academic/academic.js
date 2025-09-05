@@ -29,7 +29,7 @@ export default function Academic() {
   const [editDifficulty, setEditDifficulty] = useState('Easy');
   const [darkMode, setDarkMode] = useState(false);
 
-  const BACKEND_URL = 'http://192.168.1.4:5000';
+  const BACKEND_URL = 'http://192.168.1.7:5000';
   const insets = useSafeAreaInsets();
 
   const theme = {

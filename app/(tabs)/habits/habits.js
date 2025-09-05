@@ -15,7 +15,7 @@ export default function HabitsTracker() {
   const [editFrequency, setEditFrequency] = useState('Daily');
   const [darkMode, setDarkMode] = useState(false);
 
-  const BACKEND_URL = 'http://192.168.1.4:5001';
+  const BACKEND_URL = 'http://192.168.1.7:5001';
   const insets = useSafeAreaInsets();
 
   const theme = {
