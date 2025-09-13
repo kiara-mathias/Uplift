@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/(tabs)/habits/habits.js", "app/(tabs)/_layout.js", "app/(tabs)/index.js"  ]
+, "app/(tabs)/habits/habits.js", "app/(tabs)/_layout.js", "app/(tabs)/index.js", "constants/Colors.js"  ]
 }

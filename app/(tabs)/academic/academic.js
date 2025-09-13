@@ -1,21 +1,11 @@
+import { Palettes } from '@/constants/Colors'; // 👈 import your palettes
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import {
-  Alert,
-  FlatList,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+  Alert, FlatList, Image, KeyboardAvoidingView, Platform, ScrollView, StatusBar,
+  StyleSheet, Switch, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,27 +22,8 @@ export default function Academic() {
   const BACKEND_URL = 'http://192.168.1.7:5000';
   const insets = useSafeAreaInsets();
 
-  const theme = {
-    light: {
-      background: '#f5f5f5',
-      card: '#ffffff',
-      text: '#111',
-      secondaryText: '#555',
-      accent: '#584ff9',
-      buttonText: '#fff',
-      inputBackground: '#fafafa',
-    },
-    dark: {
-      background: '#121212',
-      card: '#1e1e1e',
-      text: '#f5f5f5',
-      secondaryText: '#aaa',
-      accent: '#8c84ff',
-      buttonText: '#fff',
-      inputBackground: '#2a2a2a',
-    },
-  };
-  const current = darkMode ? theme.dark : theme.light;
+  // 🎨 use your academic palette
+  const theme = darkMode ? Palettes.academic.dark : Palettes.academic.light;
 
   const difficultyColors = {
     Easy: '#4caf50',
@@ -148,27 +119,27 @@ export default function Academic() {
   };
 
   const renderItem = ({ item }) => (
-    <View style={[styles.card, { backgroundColor: current.card }]}>
+    <View style={[styles.card, { backgroundColor: theme.card }]}>
       {editingId === item.id ? (
         <>
           <TextInput
             value={editName}
             onChangeText={setEditName}
-            style={[styles.input, { backgroundColor: current.inputBackground, color: current.text }]}
+            style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]}
             placeholder="Subject Name"
-            placeholderTextColor={current.secondaryText}
+            placeholderTextColor={theme.secondaryText}
           />
-          <Picker selectedValue={editDifficulty} onValueChange={setEditDifficulty} style={[styles.picker, { backgroundColor: current.inputBackground, color: current.text }]}>
+          <Picker selectedValue={editDifficulty} onValueChange={setEditDifficulty} style={[styles.picker, { backgroundColor: theme.inputBackground, color: theme.text }]}>
             <Picker.Item label="Easy" value="Easy" />
             <Picker.Item label="Medium" value="Medium" />
             <Picker.Item label="Hard" value="Hard" />
           </Picker>
           <View style={{flexDirection:'row', justifyContent:'space-between', marginTop:5}}>
-            <TouchableOpacity style={[styles.saveButton, { backgroundColor: current.accent }]} onPress={saveEdit}>
-              <Text style={{ color: current.buttonText }}>Save</Text>
+            <TouchableOpacity style={[styles.saveButton, { backgroundColor: theme.accent }]} onPress={saveEdit}>
+              <Text style={{ color: theme.buttonText }}>Save</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.deleteButton, { backgroundColor: '#f44336' }]} onPress={() => setEditingId(null)}>
-              <Text style={{ color: current.buttonText }}>Cancel</Text>
+              <Text style={{ color: theme.buttonText }}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </>
@@ -176,11 +147,11 @@ export default function Academic() {
         <>
           <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
             <TouchableOpacity onPress={() => incrementProgress(item.id)}>
-              <Text style={[styles.subjectName, { color: current.text }]}>{item.name}</Text>
+              <Text style={[styles.subjectName, { color: theme.text }]}>{item.name}</Text>
             </TouchableOpacity>
             <View style={{flexDirection:'row', alignItems:'center'}}>
-              <Text style={[styles.difficulty, { color: current.secondaryText }]}>{item.difficulty}</Text>
-              <TouchableOpacity style={[styles.iconButton, { backgroundColor: current.accent }]} onPress={() => startEditing(item)}>
+              <Text style={[styles.difficulty, { color: theme.secondaryText }]}>{item.difficulty}</Text>
+              <TouchableOpacity style={[styles.iconButton, { backgroundColor: theme.accent }]} onPress={() => startEditing(item)}>
                 <MaterialIcons name="edit" size={20} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity style={[styles.iconButton, { backgroundColor: '#f44336' }]} onPress={() => deleteSubject(item.id)}>
@@ -193,32 +164,29 @@ export default function Academic() {
           <Progress.Bar
             progress={item.progress / 100}
             width={null}
-            color={difficultyColors[item.difficulty] || current.accent}
+            color={difficultyColors[item.difficulty] || theme.accent}
             borderRadius={6}
             style={{marginTop:5}}
           />
-          <Text style={{marginTop:5, color: current.secondaryText}}>{item.progress}% completed</Text>
+          <Text style={{marginTop:5, color: theme.secondaryText}}>{item.progress}% completed</Text>
 
-          {/* Weekly Checklist with Day Labels */}
+          {/* Weekly Checklist */}
           <View style={{flexDirection:'row', alignItems:'center', marginTop:5}}>
             {['M','T','W','Th','F'].map((day, idx) => (
               <TouchableOpacity
                 key={idx}
                 onPress={() => incrementProgress(item.id, 20)}
-                style={{
-                  alignItems:'center',
-                  marginRight:8
-                }}
+                style={{ alignItems:'center', marginRight:8 }}
               >
                 <View style={{
                   width: 16,
                   height:16,
                   borderRadius:8,
                   backgroundColor: idx+1 <= Math.ceil(item.progress / 20)
-                    ? (difficultyColors[item.difficulty] || current.accent)
+                    ? (difficultyColors[item.difficulty] || theme.accent)
                     : '#ccc'
                 }}/>
-                <Text style={{color: current.secondaryText, fontSize:10, marginTop:2}}>{day}</Text>
+                <Text style={{color: theme.secondaryText, fontSize:10, marginTop:2}}>{day}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -228,23 +196,23 @@ export default function Academic() {
   );
 
   return (
-    <SafeAreaView style={{flex:1, backgroundColor: current.background, paddingTop: insets.top}}>
-      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} backgroundColor={current.background} />
+    <SafeAreaView style={{flex:1, backgroundColor: theme.background, paddingTop: insets.top}}>
+      <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} backgroundColor={theme.background} />
       <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView contentContainerStyle={styles.container}>
           
-          {/* Header + Profile Image + Dark/Light Toggle */}
+          {/* Header */}
           <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:15}}>
             <View style={{flexDirection:'row', alignItems:'center'}}>
-              <Text style={[styles.dashboardTitle, { color: current.text }]}>Academic Dashboard</Text>
+              <Text style={[styles.dashboardTitle, { color: theme.text }]}>Academic Dashboard</Text>
               <Image 
                 source={require('../../../assets/images/undraw_studying.png')} 
                 style={styles.profileImage} 
               />
             </View>
             <View style={{flexDirection:'row', alignItems:'center'}}>
-              <Text style={{color: current.secondaryText, marginRight:5}}>{darkMode ? 'Dark' : 'Light'}</Text>
-              <Switch value={darkMode} onValueChange={setDarkMode} thumbColor={current.accent} />
+              <Text style={{color: theme.secondaryText, marginRight:5}}>{darkMode ? 'Dark' : 'Light'}</Text>
+              <Switch value={darkMode} onValueChange={setDarkMode} thumbColor={theme.accent} />
             </View>
           </View>
 
@@ -253,16 +221,16 @@ export default function Academic() {
             value={subjectName}
             onChangeText={setSubjectName}
             placeholder="Subject Name"
-            placeholderTextColor={current.secondaryText}
-            style={[styles.input, { backgroundColor: current.inputBackground, color: current.text }]}
+            placeholderTextColor={theme.secondaryText}
+            style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]}
           />
-          <Picker selectedValue={difficulty} onValueChange={setDifficulty} style={[styles.picker, { backgroundColor: current.inputBackground, color: current.text }]}>
+          <Picker selectedValue={difficulty} onValueChange={setDifficulty} style={[styles.picker, { backgroundColor: theme.inputBackground, color: theme.text }]}>
             <Picker.Item label="Easy" value="Easy" />
             <Picker.Item label="Medium" value="Medium" />
             <Picker.Item label="Hard" value="Hard" />
           </Picker>
-          <TouchableOpacity style={[styles.addButton, { backgroundColor: current.accent }]} onPress={addSubject}>
-            <Text style={{ color: current.buttonText, fontWeight:'bold' }}>Add Subject</Text>
+          <TouchableOpacity style={[styles.addButton, { backgroundColor: theme.accent }]} onPress={addSubject}>
+            <Text style={{ color: theme.buttonText, fontWeight:'bold' }}>Add Subject</Text>
           </TouchableOpacity>
 
           {/* Subjects List */}
@@ -270,7 +238,7 @@ export default function Academic() {
             data={subjects.filter(sub => sub && sub.id !== undefined)}
             keyExtractor={item => item.id.toString()}
             renderItem={renderItem}
-            ListEmptyComponent={<Text style={{textAlign:'center', marginTop:20, color: current.secondaryText}}>No subjects yet. Add one above!</Text>}
+            ListEmptyComponent={<Text style={{textAlign:'center', marginTop:20, color: theme.secondaryText}}>No subjects yet. Add one above!</Text>}
             scrollEnabled={false}
             style={{marginTop:15}}
           />

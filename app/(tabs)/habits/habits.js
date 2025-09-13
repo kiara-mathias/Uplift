@@ -1,3 +1,4 @@
+import { Palettes } from '@/constants/Colors'; // absolute import
 import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -18,27 +19,7 @@ export default function HabitsTracker() {
   const BACKEND_URL = 'http://192.168.1.7:5001';
   const insets = useSafeAreaInsets();
 
-  const theme = {
-    light: {
-      background: '#f5f5f5',
-      card: '#ffffff',
-      text: '#111',
-      secondaryText: '#555',
-      accent: '#584ff9',
-      buttonText: '#fff',
-      inputBackground: '#fafafa',
-    },
-    dark: {
-      background: '#121212',
-      card: '#1e1e1e',
-      text: '#f5f5f5',
-      secondaryText: '#aaa',
-      accent: '#8c84ff',
-      buttonText: '#fff',
-      inputBackground: '#2a2a2a',
-    },
-  };
-  const current = darkMode ? theme.dark : theme.light;
+  const current = darkMode ? Palettes.habits.dark : Palettes.habits.light;
 
   useEffect(() => {
     fetchHabits();
@@ -57,7 +38,9 @@ export default function HabitsTracker() {
     if (!habitName.trim()) return alert('Please enter a valid habit name!');
     axios.post(`${BACKEND_URL}/habits`, { name: habitName.trim(), frequency, progress: 0 })
       .then(() => {
-        setHabitName(''); setFrequency('Daily'); fetchHabits();
+        setHabitName('');
+        setFrequency('Daily');
+        fetchHabits();
       })
       .catch(err => console.log(err));
   };
@@ -88,20 +71,34 @@ export default function HabitsTracker() {
       Alert.alert('Delete Habit', 'Are you sure?', [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Delete', style: 'destructive', onPress: async () => {
-          try { await axios.delete(`${BACKEND_URL}/habits/${id}`); setHabits(prev => prev.filter(h => h.id !== id)); }
-          catch(err){ console.log(err); alert('Failed to delete habit'); }
+          try {
+            await axios.delete(`${BACKEND_URL}/habits/${id}`);
+            setHabits(prev => prev.filter(h => h.id !== id));
+          } catch(err) {
+            console.log(err);
+            alert('Failed to delete habit');
+          }
         }}
       ]);
     }
   };
 
-  const startEditing = (h) => { setEditingId(h.id); setEditName(h.name); setEditFrequency(h.frequency); };
+  const startEditing = (h) => {
+    setEditingId(h.id);
+    setEditName(h.name);
+    setEditFrequency(h.frequency);
+  };
 
   const saveEdit = () => {
     if (!editName.trim()) return alert('Name cannot be empty!');
     const updated = { ...habits.find(h => h.id === editingId), name: editName.trim(), frequency: editFrequency };
     axios.put(`${BACKEND_URL}/habits/${editingId}`, updated)
-      .then(() => { setEditingId(null); setEditName(''); setEditFrequency('Daily'); fetchHabits(); })
+      .then(() => {
+        setEditingId(null);
+        setEditName('');
+        setEditFrequency('Daily');
+        fetchHabits();
+      })
       .catch(err => console.log(err));
   };
 
@@ -169,9 +166,9 @@ export default function HabitsTracker() {
   return (
     <SafeAreaView style={{flex:1, backgroundColor: current.background, paddingTop: insets.top}}>
       <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} backgroundColor={current.background} />
-      <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-        <ScrollView contentContainerStyle={styles.container}>
-
+      <KeyboardAvoidingView style={{flex:1, backgroundColor: current.background}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <ScrollView contentContainerStyle={[styles.container, { backgroundColor: current.background, flexGrow: 1 }]}>
+          
           {/* Header + Dark/Light Toggle */}
           <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:15}}>
             <Text style={[styles.dashboardTitle, { color: current.text }]}>Habit Tracker</Text>
@@ -221,5 +218,5 @@ const styles = StyleSheet.create({
   frequency: { fontWeight:'bold', marginRight:5 },
   iconButton: { padding:6, borderRadius:8, marginLeft:5 },
   saveButton: { padding:10, borderRadius:12, alignItems:'center', flex:1, marginRight:5 },
-  deleteButton: { padding:10, borderRadius:12, alignItems:'center', flex:1 },
+  deleteButton: { padding:10, borderRadius:12, alignItems:'center', flex:1 }
 });
