@@ -13,8 +13,8 @@ export default function Home() {
   const theme = darkMode ? Palettes.home.dark : Palettes.home.light;
 
   const focusAreas = [
-    { label: 'Academics', route: '/academic/academic', icon: 'school', colors: ['#6c63ff', '#9591ee'] },
-    { label: 'Habits', route: '/habits/habits', icon: 'check-circle', colors: ['#FFA500', '#FFD580'] },
+    { label: 'Academics', route: '/academic/academic-home', icon: 'school', colors: ['#6c63ff', '#9591ee'] },
+    { label: 'Habits', route: '/habits/habits-home', icon: 'check-circle', colors: ['#FFA500', '#FFD580'] },
     { label: 'Nutrition', route: '/nutrition/index', icon: 'restaurant', colors: ['#3CB371', '#a8e063'] },
     { label: 'Well-being', route: '/wellbeing/index', icon: 'self-improvement', colors: ['#6A5ACD', '#b39ddb'] },
     { label: 'Hobbies', route: '/hobbies/index', icon: 'brush', colors: ['#FF69B4', '#FFB6C1'] },
