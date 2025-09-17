@@ -2,19 +2,21 @@ import { Palettes } from '@/constants/Colors';
 import { useTheme } from '@/context/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AcademicHome() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { darkMode } = useTheme();
   const theme = darkMode ? Palettes.academic.dark : Palettes.academic.light;
 
   // Example academic tasks
   const tasks = [
-    { label: 'Assignments', icon: 'assignment', colors: ['#6c63ff', '#9591ee'] },
-    { label: 'Exams', icon: 'event-note', colors: ['#262182', '#6c63ff'] },
-    { label: 'Projects', icon: 'folder', colors: ['#9591ee', '#6c63ff'] },
+    { label: 'Academic tracker', route: '/academic/academic', icon: 'assignment', colors: ['#6c63ff', '#9591ee'] }
+    // { label: 'Exams', icon: 'event-note', colors: ['#262182', '#6c63ff'] },
+    // { label: 'Projects', icon: 'folder', colors: ['#9591ee', '#6c63ff'] },
   ];
 
   return (
@@ -34,6 +36,7 @@ export default function AcademicHome() {
               key={idx}
               style={styles.cardWrapper}
               activeOpacity={0.9}
+              onPress={() => router.push(task.route)}
             >
               <LinearGradient
                 colors={task.colors}

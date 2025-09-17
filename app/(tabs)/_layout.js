@@ -29,9 +29,9 @@ function TabLayoutContent() {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" options={getTabOptions('home', 'home', 'Home')} />
-      <Tabs.Screen name="academic/academic" options={getTabOptions('academic', 'school', 'Academic')} />
-      <Tabs.Screen name="habits/habit" options={getTabOptions('habits', 'check-circle', 'Habits')} />
-      <Tabs.Screen name="nutrition/nutrition" options={getTabOptions('nutrition', 'restaurant', 'Nutrition')} />
+      <Tabs.Screen name="academic/academic-home" options={getTabOptions('academic', 'school', 'Academic')} />
+      <Tabs.Screen name="habits/habits-home" options={getTabOptions('habits', 'check-circle', 'Habits')} />
+      {/* <Tabs.Screen name="nutrition/nutrition" options={getTabOptions('nutrition', 'restaurant', 'Nutrition')} /> */}
     </Tabs>
   );
 }
