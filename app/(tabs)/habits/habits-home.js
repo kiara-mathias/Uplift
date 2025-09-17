@@ -13,7 +13,7 @@ export default function HabitsHome() {
   const theme = darkMode ? Palettes.habits.dark : Palettes.habits.light;
 
   const habits = [
-    { label: 'Habit Tracker', route: '/habits/_habits', icon: 'check-circle', colors: ['#FFA500', '#FFD580'] },
+    { label: 'Habit Tracker', route: '/features/habits/_habits', icon: 'check-circle', colors: ['#FFA500', '#FFD580'] },
     { label: 'Daily Routine', route: '/habits/routine', icon: 'calendar-today', colors: ['#6c63ff', '#9591ee'] },
     { label: 'Goals', route: '/habits/goals', icon: 'star', colors: ['#262182', '#6c63ff'] },
   ];
