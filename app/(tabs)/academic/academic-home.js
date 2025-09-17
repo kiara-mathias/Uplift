@@ -14,7 +14,7 @@ export default function AcademicHome() {
 
   // Example academic tasks
   const tasks = [
-    { label: 'Academic tracker', route: '/academic/academic', icon: 'assignment', colors: ['#6c63ff', '#9591ee'] }
+    { label: 'Academic tracker', route: '/features/academic/academic', icon: 'assignment', colors: ['#6c63ff', '#9591ee'] }
     // { label: 'Exams', icon: 'event-note', colors: ['#262182', '#6c63ff'] },
     // { label: 'Projects', icon: 'folder', colors: ['#9591ee', '#6c63ff'] },
   ];
