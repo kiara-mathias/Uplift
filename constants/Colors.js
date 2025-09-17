@@ -35,13 +35,13 @@ export const Palettes = {
       inputBackground: INPUT_BG,
     },
     dark: {
-      background: '#000',                // Black background
-      card: '#232347',                   // Softer dark card
-      text: '#f3f4fe',                   // Light purple text
-      secondaryText: '#9591ee',          // Soft purple secondary
-      accent: PRIMARY,                   // Primary accent
+      background: '#000',
+      card: '#232347',
+      text: '#f3f4fe',
+      secondaryText: '#9591ee',
+      accent: PRIMARY,
       buttonText: '#fff',
-      inputBackground: '#232347',        // Match card for input
+      inputBackground: '#232347',
     },
   },
   academic: {
@@ -65,6 +65,26 @@ export const Palettes = {
     },
   },
   habits: {
+    light: {
+      background: '#fff',
+      card: CARD_BG,
+      text: TEXT,
+      secondaryText: BODY_TEXT,
+      accent: PRIMARY,
+      buttonText: '#fff',
+      inputBackground: INPUT_BG,
+    },
+    dark: {
+      background: '#000',
+      card: '#232347',
+      text: '#f3f4fe',
+      secondaryText: '#9591ee',
+      accent: PRIMARY,
+      buttonText: '#fff',
+      inputBackground: '#232347',
+    },
+  },
+  hobbies: {
     light: {
       background: '#fff',
       card: CARD_BG,

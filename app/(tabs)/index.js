@@ -17,7 +17,7 @@ export default function Home() {
     { label: 'Habits', route: '/habits/habits-home', icon: 'check-circle', colors: ['#FFA500', '#FFD580'] },
     { label: 'Nutrition', route: '/nutrition/index', icon: 'restaurant', colors: ['#3CB371', '#a8e063'] },
     { label: 'Well-being', route: '/wellbeing/index', icon: 'self-improvement', colors: ['#6A5ACD', '#b39ddb'] },
-    { label: 'Hobbies', route: '/hobbies/index', icon: 'brush', colors: ['#FF69B4', '#FFB6C1'] },
+    { label: 'Hobbies', route: '/hobbies/hobbies-home', icon: 'brush', colors: ['#FF69B4', '#FFB6C1'] },
   ];
 
   return (
