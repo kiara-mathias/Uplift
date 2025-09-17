@@ -1,50 +1,39 @@
 import { Colors, Palettes } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useTheme } from '@/context/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme(); // "light" or "dark"
+function TabLayoutContent() {
+  const { darkMode } = useTheme();
+  const colorScheme = darkMode ? 'dark' : 'light';
 
-  // Helper to pick the right palette for each tab
   const getTabOptions = (paletteKey, iconName, label) => {
-    const palette = Palettes[paletteKey]?.[colorScheme ?? 'light'];
-
+    const palette = Palettes[paletteKey]?.[colorScheme];
     return {
       title: label,
       tabBarIcon: ({ color, size }) => (
         <MaterialIcons name={iconName} size={size} color={color} />
       ),
       tabBarStyle: {
-        backgroundColor: palette?.background ?? Colors[colorScheme ?? 'light'].background,
+        backgroundColor: palette?.background ?? Colors[colorScheme].background,
       },
-      tabBarActiveTintColor: palette?.accent ?? Colors[colorScheme ?? 'light'].tint,
-      tabBarInactiveTintColor: palette?.secondaryText ?? Colors[colorScheme ?? 'light'].icon,
+      tabBarActiveTintColor: palette?.accent ?? Colors[colorScheme].tint,
+      tabBarInactiveTintColor: palette?.secondaryText ?? Colors[colorScheme].icon,
       headerStyle: {
-        backgroundColor: palette?.background ?? Colors[colorScheme ?? 'light'].background,
+        backgroundColor: palette?.background ?? Colors[colorScheme].background,
       },
-      headerTintColor: palette?.text ?? Colors[colorScheme ?? 'light'].text,
+      headerTintColor: palette?.text ?? Colors[colorScheme].text,
     };
   };
 
   return (
     <Tabs screenOptions={{ headerShown: false }}>
-      <Tabs.Screen
-        name="index" // Home
-        options={getTabOptions('home', 'home', 'Home')}
-      />
-      <Tabs.Screen
-        name="academic/academic"
-        options={getTabOptions('academic', 'school', 'Academic')}
-      />
-      <Tabs.Screen
-        name="habits/habit"
-        options={getTabOptions('habits', 'check-circle', 'Habits')}
-      />
-      <Tabs.Screen
-        name="nutrition/nutrition"
-        options={getTabOptions('nutrition', 'restaurant', 'Nutrition')}
-      />
+      <Tabs.Screen name="index" options={getTabOptions('home', 'home', 'Home')} />
+      <Tabs.Screen name="academic/academic" options={getTabOptions('academic', 'school', 'Academic')} />
+      <Tabs.Screen name="habits/habit" options={getTabOptions('habits', 'check-circle', 'Habits')} />
+      <Tabs.Screen name="nutrition/nutrition" options={getTabOptions('nutrition', 'restaurant', 'Nutrition')} />
     </Tabs>
   );
 }
+
+export default TabLayoutContent;

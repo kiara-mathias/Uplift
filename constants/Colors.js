@@ -1,87 +1,87 @@
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const PRIMARY = '#6c63ff';
+const CARD_BG = '#f3f4fe';      // very light purple for cards
+const TEXT = '#262182';         // deep purple for headings
+const BODY_TEXT = '#444';       // neutral for body text
+const INPUT_BG = '#e9eafd';     // soft purple for inputs
 
 export const Colors = {
   light: {
-    text: '#11181C',
+    text: TEXT,
     background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    tint: PRIMARY,
+    icon: PRIMARY,
+    tabIconDefault: BODY_TEXT,
+    tabIconSelected: PRIMARY,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: '#fff',
+    background: '#000', // Changed to black for dark mode
+    tint: PRIMARY,
+    icon: PRIMARY,
+    tabIconDefault: '#9591ee',
+    tabIconSelected: PRIMARY,
   },
 };
 
-// 🎨 Add page-specific palettes
 export const Palettes = {
   home: {
     light: {
-      background: '#FAEBD7', // Antique White
-      card: '#8B4513',       // Dirt Brown
-      text: '#111',
-      secondaryText: '#555',
-      accent: '#7897AB',     // Link Water
+      background: '#fff',
+      card: CARD_BG,
+      text: TEXT,
+      secondaryText: BODY_TEXT,
+      accent: PRIMARY,
       buttonText: '#fff',
-      inputBackground: '#F0F0F0',
+      inputBackground: INPUT_BG,
     },
     dark: {
-      background: '#2F4F4F', // Slate Gray
-      card: '#556B2F',       // Slate Green
-      text: '#fff',
-      secondaryText: '#aaa',
-      accent: '#7897AB',
+      background: '#000',                // Black background
+      card: '#232347',                   // Softer dark card
+      text: '#f3f4fe',                   // Light purple text
+      secondaryText: '#9591ee',          // Soft purple secondary
+      accent: PRIMARY,                   // Primary accent
       buttonText: '#fff',
-      inputBackground: '#333',
+      inputBackground: '#232347',        // Match card for input
     },
   },
-
   academic: {
     light: {
-      background: '#E6D0C4', // Desert Sand
-      card: '#C19A6B',       // Apache
-      text: '#111',
-      secondaryText: '#444',
-      accent: '#7B3F00',     // Cocoa
+      background: '#fff',
+      card: CARD_BG,
+      text: TEXT,
+      secondaryText: BODY_TEXT,
+      accent: PRIMARY,
       buttonText: '#fff',
-      inputBackground: '#F2E6DF',
+      inputBackground: INPUT_BG,
     },
     dark: {
-      background: '#4E3629', // Metallic Bronze
-      card: '#7B3F00',       // Cocoa
-      text: '#fff',
-      secondaryText: '#bbb',
-      accent: '#C19A6B',     // Apache
+      background: '#000',
+      card: '#232347',
+      text: '#f3f4fe',
+      secondaryText: '#9591ee',
+      accent: PRIMARY,
       buttonText: '#fff',
-      inputBackground: '#3A2C23',
+      inputBackground: '#232347',
     },
   },
-
   habits: {
     light: {
-      background: '#FAFAFA', // Alabaster
-      card: '#CCCCFF',       // Periwinkle
-      text: '#111',
-      secondaryText: '#444',
-      accent: '#FFA500',     // Royal Orange
+      background: '#fff',
+      card: CARD_BG,
+      text: TEXT,
+      secondaryText: BODY_TEXT,
+      accent: PRIMARY,
       buttonText: '#fff',
-      inputBackground: '#fff',
+      inputBackground: INPUT_BG,
     },
     dark: {
-      background: '#2E2E2E',
-      card: '#708090',       // Slate-like for dark mode
-      text: '#fff',
-      secondaryText: '#aaa',
-      accent: '#FFA500',
+      background: '#000',
+      card: '#232347',
+      text: '#f3f4fe',
+      secondaryText: '#9591ee',
+      accent: PRIMARY,
       buttonText: '#fff',
-      inputBackground: '#3A3A3A',
+      inputBackground: '#232347',
     },
   },
 };

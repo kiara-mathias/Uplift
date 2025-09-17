@@ -1,0 +1,16 @@
+[33m933aef2[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m WIP: save before NativeWind setup
+[33m823ef84[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mfeature/palettes-and-clean-nav[m[33m)[m Add habits palette, dark/light theme, and fix background issue
+[33m2999a6e[m Working academic.js and habit.js setup
+[33m7d1e6be[m changes made
+[33mdd81767[m Remove large PDF exceeding GitHub limit
+[33mdf7914c[m Refactor: Move academic.js into academic folder
+[33mae72384[m Merge branch 'kiara-academic-ui'
+[33m51f622a[m[33m ([m[1;31morigin/kiara-academic-ui[m[33m, [m[1;32mkiara-academic-ui[m[33m)[m Added Habit Tracker
+[33m6e8b88d[m Merge pull request #2 from kiara-mathias/kiara-academic-ui
+[33mdf7f107[m Frontend: Updated Academic Dashboard with interactive weekly checklist, dark/light mode, modern buttons, day labels
+[33m27bbe48[m Frontend: Updated Academic Dashboard with interactive weekly checklist, dark/light mode, modern buttons, day labels
+[33mf5c447f[m Working Academic Dashboard: add/edit/delete/progress fully functional
+[33m94b09dc[m Merge pull request #1 from kiara-mathias/kiara-academic-ui
+[33m630a5b8[m Add Academic tab with form, dashboard and persistent backend
+[33me99ede3[m Initial Commit
+[33m6fcb5dc[m Initial commit
