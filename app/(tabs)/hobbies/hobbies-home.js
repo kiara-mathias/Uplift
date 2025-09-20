@@ -232,7 +232,13 @@ export default function HobbiesHome() {
             <View style={styles.actionButtons}>
               <TouchableOpacity
                 style={[styles.primaryActionBtn, { backgroundColor: theme.accent }]}
-                onPress={() => router.push('/features/hobbies/tracker')}
+                onPress={() => router.push({
+                  pathname: '/features/hobbies/hobbies-tracker',
+                  params: {
+                    hobbies: JSON.stringify(hobbyPlan.hobbies),
+                    schedule: JSON.stringify(hobbyPlan.schedule)
+                  }
+                })}
               >
                 <MaterialIcons name="assignment" size={22} color="#fff" />
                 <Text style={styles.primaryActionBtnText}>Your Hobbies</Text>
@@ -240,7 +246,13 @@ export default function HobbiesHome() {
               
               <TouchableOpacity
                 style={[styles.secondaryActionBtn, { backgroundColor: darkMode ? '#2a2a4a' : '#f3f4fe' }]}
-                onPress={() => router.push('/features/hobbies/timer')}
+                onPress={() => router.push({
+                  pathname: '/features/hobbies/hobbies-timer',
+                  params: {
+                    hobbies: JSON.stringify(hobbyPlan.hobbies),
+                    schedule: JSON.stringify(hobbyPlan.schedule)
+                  }
+                })}
               >
                 <MaterialIcons name="alarm" size={20} color={theme.accent} />
                 <Text style={[styles.secondaryActionBtnText, { color: theme.accent }]}>Set Timer</Text>
