@@ -212,45 +212,38 @@ export default function HobbiesHome() {
               </View>
             </View>
 
-            {/* Hobby Cards */}
-            <View style={styles.cardsContainer}>
+            {/* Priority Hobbies Display */}
+            <View style={styles.priorityContainer}>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>Your Hobbies (Priority Order)</Text>
               {hobbyPlan.hobbies.map((hobby, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  style={styles.cardWrapper}
-                  activeOpacity={0.9}
-                  onPress={() => router.push(`/features/hobbies/${hobby.toLowerCase().replace(' ', '-')}`)}
-                >
-                  <LinearGradient
-                    colors={['#6c63ff', '#9591ee']}
-                    start={[0, 0]}
-                    end={[1, 1]}
-                    style={styles.card}
-                  >
-                    <MaterialIcons name="favorite" size={24} color="#fff" style={{ marginBottom: 8 }} />
-                    <Text style={styles.cardText}>{hobby}</Text>
-                    <Text style={styles.cardSubtext}>Tap to track</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
+                <View key={idx} style={[styles.priorityItem, { backgroundColor: darkMode ? '#2a2a4a' : '#f8f9ff' }]}>
+                  <View style={styles.priorityLeft}>
+                    <View style={[styles.priorityNumber, { backgroundColor: theme.accent }]}>
+                      <Text style={styles.priorityNumberText}>{idx + 1}</Text>
+                    </View>
+                    <Text style={[styles.priorityHobby, { color: theme.text }]}>{hobby}</Text>
+                  </View>
+                  <MaterialIcons name="star" size={20} color="#FFD700" />
+                </View>
               ))}
             </View>
 
             {/* Action Buttons */}
             <View style={styles.actionButtons}>
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: theme.accent }]}
+                style={[styles.primaryActionBtn, { backgroundColor: theme.accent }]}
                 onPress={() => router.push('/features/hobbies/tracker')}
               >
-                <MaterialIcons name="track-changes" size={20} color="#fff" />
-                <Text style={styles.actionBtnText}>Open Tracker</Text>
+                <MaterialIcons name="assignment" size={22} color="#fff" />
+                <Text style={styles.primaryActionBtnText}>Your Hobbies</Text>
               </TouchableOpacity>
               
               <TouchableOpacity
-                style={[styles.actionBtn, { backgroundColor: darkMode ? '#2a2a4a' : '#f3f4fe' }]}
-                onPress={() => router.push('/features/hobbies/schedule')}
+                style={[styles.secondaryActionBtn, { backgroundColor: darkMode ? '#2a2a4a' : '#f3f4fe' }]}
+                onPress={() => router.push('/features/hobbies/timer')}
               >
-                <MaterialIcons name="schedule" size={20} color={theme.accent} />
-                <Text style={[styles.actionBtnText, { color: theme.accent }]}>Set Schedule</Text>
+                <MaterialIcons name="alarm" size={20} color={theme.accent} />
+                <Text style={[styles.secondaryActionBtnText, { color: theme.accent }]}>Set Timer</Text>
               </TouchableOpacity>
             </View>
           </>
@@ -335,59 +328,77 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  cardsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  priorityContainer: {
     marginBottom: 24,
   },
-  cardWrapper: {
-    width: '48%',
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
     marginBottom: 16,
-    borderRadius: 20,
-    overflow: 'hidden',
-    elevation: 6,
-    shadowColor: '#6c63ff',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
   },
-  card: {
-    borderRadius: 20,
-    paddingVertical: 24,
-    paddingHorizontal: 12,
+  priorityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  priorityLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  priorityNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 12,
   },
-  cardText: {
+  priorityNumberText: {
     color: '#fff',
-    fontWeight: '700',
     fontSize: 14,
-    textAlign: 'center',
-    letterSpacing: 0.5,
-    marginBottom: 4,
+    fontWeight: '700',
   },
-  cardSubtext: {
-    color: '#fff',
-    fontSize: 12,
-    opacity: 0.8,
-    textAlign: 'center',
+  priorityHobby: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   actionButtons: {
     flexDirection: 'row',
     gap: 12,
     marginTop: 8,
   },
-  actionBtn: {
+  primaryActionBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
+    borderRadius: 20,
+    gap: 8,
+    elevation: 4,
+    shadowColor: '#6c63ff',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  primaryActionBtnText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  secondaryActionBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
     borderRadius: 20,
     gap: 8,
   },
-  actionBtnText: {
+  secondaryActionBtnText: {
     fontWeight: '600',
     fontSize: 14,
   },
