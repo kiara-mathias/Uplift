@@ -7,12 +7,14 @@ import {
   Animated,
   Easing,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
   StatusBar,
   StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 
 export default function Landing() {
@@ -20,31 +22,39 @@ export default function Landing() {
   const router = useRouter();
   const [checking, setChecking] = useState(true);
   const [showSplash, setShowSplash] = useState(false);
+  const [showLanding, setShowLanding] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(0.7)).current;
   const buttonTranslate = useRef(new Animated.Value(60)).current;
   const buttonOpacity = useRef(new Animated.Value(0)).current;
 
+  // ----- FOR TESTING: Force landing page to show -----
+  const FORCE_LANDING = true;
+
+  // Check if user is logged in
   useEffect(() => {
     const checkLoggedIn = async () => {
       try {
         const loggedIn = await AsyncStorage.getItem('loggedIn');
-        if (loggedIn === 'true') {
+        if (loggedIn === 'true' && !FORCE_LANDING) {
           setShowSplash(true);
           setTimeout(() => router.replace('/(tabs)'), 1000);
         } else {
-          setChecking(false);
+          setShowLanding(true);
         }
       } catch {
+        setShowLanding(true);
+      } finally {
         setChecking(false);
       }
     };
     checkLoggedIn();
   }, []);
 
+  // Animate landing page
   useEffect(() => {
-    if (!checking && !showSplash) {
+    if (!checking && showLanding) {
       Animated.sequence([
         Animated.parallel([
           Animated.timing(fadeAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
@@ -62,8 +72,18 @@ export default function Landing() {
         ]),
       ]).start();
     }
-  }, [checking, showSplash]);
+  }, [checking, showLanding]);
 
+  // Loader while checking AsyncStorage
+  if (checking) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    );
+  }
+
+  // Splash for logged-in users (only if FORCE_LANDING = false)
   if (showSplash) {
     return (
       <View style={[styles.splashContainer, { backgroundColor: darkMode ? '#121212' : '#f5f9ff' }]}>
@@ -82,53 +102,64 @@ export default function Landing() {
     );
   }
 
-  if (checking) {
+  // Landing Page
+  if (showLanding) {
     return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-      </View>
+      <ImageBackground
+        source={{ uri: 'https://images.unsplash.com/photo-1506784365847-bbad939e9335' }}
+        style={styles.background}
+        blurRadius={2}
+      >
+        <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
+        <View style={styles.toggleContainer}>
+          <Text style={[styles.toggleLabel, { color: darkMode ? '#fff' : '#222' }]}>
+            {darkMode ? 'Dark' : 'Light'} Mode
+          </Text>
+          <Switch
+            value={darkMode}
+            onValueChange={setDarkMode}
+            thumbColor="#4CAF50"
+            trackColor={{ false: '#ccc', true: '#333' }}
+          />
+        </View>
+
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.overlay}>
+          <Animated.Image
+            source={require('../assets/images/logo.png')}
+            style={[styles.logo, { transform: [{ scale: logoScale }] }]}
+          />
+
+          <Animated.Text style={[styles.quote, { opacity: fadeAnim }]}>
+            "Balance your habits, academics, and hobbies – uplift yourself daily."
+          </Animated.Text>
+
+          <Animated.View
+            style={{ width: '100%', opacity: buttonOpacity, transform: [{ translateY: buttonTranslate }] }}
+          >
+            {/* Get Started Button */}
+            <TouchableOpacity style={styles.button} onPress={() => router.push('/user_auth/login')}>
+              <Text style={styles.buttonText}>Get Started</Text>
+            </TouchableOpacity>
+
+            {/* Logout Button (for testing) */}
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: '#ff5252', marginTop: 12 }]}
+              onPress={async () => {
+                await AsyncStorage.removeItem('loggedIn');
+                setShowLanding(true);
+                setShowSplash(false);
+                console.log('Logged out, landing page reset!');
+              }}
+            >
+              <Text style={styles.buttonText}>Logout (Reset)</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </ImageBackground>
     );
   }
 
-  return (
-    <ImageBackground
-      source={{ uri: 'https://images.unsplash.com/photo-1506784365847-bbad939e9335' }}
-      style={styles.background}
-      blurRadius={2}
-    >
-      <StatusBar barStyle={darkMode ? 'light-content' : 'dark-content'} />
-      <View style={styles.toggleContainer}>
-        <Text style={[styles.toggleLabel, { color: darkMode ? '#fff' : '#222' }]}>
-          {darkMode ? 'Dark' : 'Light'} Mode
-        </Text>
-        <Switch
-          value={darkMode}
-          onValueChange={setDarkMode}
-          thumbColor="#4CAF50"
-          trackColor={{ false: '#ccc', true: '#333' }}
-        />
-      </View>
-
-      <View style={styles.overlay}>
-        <Animated.Image
-          source={require('../assets/images/logo.png')}
-          style={[styles.logo, { transform: [{ scale: logoScale }] }]}
-        />
-
-        <Animated.Text style={[styles.quote, { opacity: fadeAnim }]}>
-          "Balance your habits, academics, and hobbies – uplift yourself daily."
-        </Animated.Text>
-
-        <Animated.View
-          style={{ width: '100%', opacity: buttonOpacity, transform: [{ translateY: buttonTranslate }] }}
-        >
-          <TouchableOpacity style={styles.button} onPress={() => router.push('/user_auth/login')}>
-            <Text style={styles.buttonText}>Get Started</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      </View>
-    </ImageBackground>
-  );
+  return null;
 }
 
 const styles = StyleSheet.create({
