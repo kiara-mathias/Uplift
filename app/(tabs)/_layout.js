@@ -33,6 +33,7 @@ function TabLayoutContent() {
       <Tabs.Screen name="habits/habits-home" options={getTabOptions('habits', 'check-circle', 'Habits')} />
       <Tabs.Screen name="hobbies/hobbies-home" options={getTabOptions('hobbies', 'brush', 'Hobbies')} />
       <Tabs.Screen name="nutrition/nutrition-home" options={getTabOptions('nutrition', 'restaurant', 'Nutrition')} />
+      <Tabs.Screen name="well-being/well-being" options={getTabOptions('wellness', 'self-improvement', 'Wellness')} />
 
       {/* <Tabs.Screen name="nutrition/nutrition" options={getTabOptions('nutrition', 'restaurant', 'Nutrition')} /> */}
     </Tabs>
