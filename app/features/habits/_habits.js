@@ -16,7 +16,7 @@ export default function HabitsTracker() {
   const [editFrequency, setEditFrequency] = useState('Daily');
   const [darkMode, setDarkMode] = useState(false);
 
-  const BACKEND_URL = 'http://192.168.1.8:5001';
+  const BACKEND_URL = "http://10.146.83.118:5001";   //'http://192.168.1.8:5001';
   const insets = useSafeAreaInsets();
 
   const current = darkMode ? Palettes.habits.dark : Palettes.habits.light;
