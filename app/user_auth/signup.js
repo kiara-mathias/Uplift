@@ -10,17 +10,40 @@ const { width } = Dimensions.get('window');
 export default function Signup() {
   const router = useRouter();
   const { darkMode } = useTheme();
+  const [username, setUsername] = useState(''); // NEW
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // updated to handle auth during signup by connecting to backend
   const handleSignup = async () => {
-    if (email && password) {
-      await AsyncStorage.setItem('loggedIn', 'true');
-      router.replace('/(tabs)'); // <-- go to Home tab after signup
-    } else {
-      Alert.alert('Error', 'Please enter email and password.');
+    if (!username || !email || !password) {
+        Alert.alert('Error', 'Please enter username, email, and password.');
+        return;
     }
-  };
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Save JWT token locally
+            await AsyncStorage.setItem('token', data.access_token);
+            // Navigate to home tab
+            router.replace('/(tabs)');
+        } else {
+            Alert.alert('Signup Failed', data.error);
+        }
+    } catch (err) {
+        Alert.alert('Error', 'Network error. Try again.');
+        console.log(err);
+    }
+};
+
 
   return (
     <View style={[styles.container, { backgroundColor: darkMode ? '#121212' : '#f5f9ff' }]}>
@@ -29,6 +52,14 @@ export default function Signup() {
       </Animatable.Text>
 
       <Animatable.View animation="fadeInUp" delay={200} style={[styles.card, { backgroundColor: darkMode ? '#232347' : '#fff' }]}>
+        <TextInput
+          style={[styles.input, { backgroundColor: darkMode ? '#232347' : '#fafafa', color: darkMode ? '#fff' : '#000' }]}
+          placeholder="Username"
+          placeholderTextColor="#aaa"
+          autoCapitalize="none"
+          value={username}
+          onChangeText={setUsername}
+        />
         <TextInput
           style={[styles.input, { backgroundColor: darkMode ? '#232347' : '#fafafa', color: darkMode ? '#fff' : '#000' }]}
           placeholder="Email"
@@ -49,6 +80,7 @@ export default function Signup() {
         <TouchableOpacity style={styles.button} onPress={handleSignup}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+
 
         <TouchableOpacity style={styles.signupButton} onPress={() => router.push('/user_auth/login')}>
           <Text style={styles.signupText}>Already have an account? Login</Text>
@@ -76,3 +108,4 @@ const styles = StyleSheet.create({
   signupButton: { marginTop: 12, alignItems: 'center' },
   signupText: { color: '#6c63ff', fontWeight: '600' },
 });
+
