@@ -1,5 +1,6 @@
-import { Palettes } from '@/constants/Colors'; // 👈 import your palettes
+import { Palettes } from '@/constants/Colors';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -18,11 +19,9 @@ export default function Academic() {
   const [editName, setEditName] = useState('');
   const [editDifficulty, setEditDifficulty] = useState('Easy');
   const [darkMode, setDarkMode] = useState(false);
-
-  const BACKEND_URL = 'http://192.168.1.8:5000';       //;http://10.133.8.118:5000';
   const insets = useSafeAreaInsets();
 
-  // 🎨 use your academic palette
+  const BACKEND_URL = 'http://127.0.0.1:5000';
   const theme = darkMode ? Palettes.academic.dark : Palettes.academic.light;
 
   const difficultyColors = {
@@ -35,39 +34,54 @@ export default function Academic() {
     fetchSubjects();
   }, []);
 
-  const fetchSubjects = () => {
-    axios.get(`${BACKEND_URL}/subjects`)
-      .then(res => {
-        const validSubjects = Array.isArray(res.data)
-          ? res.data.filter(sub => sub && sub.id !== undefined)
-          : [];
-        setSubjects(validSubjects);
-      })
-      .catch(err => console.log(err));
+  const getToken = async () => await AsyncStorage.getItem('token');
+
+  const fetchSubjects = async () => {
+    try {
+      const token = await getToken();
+      const res = await axios.get(`${BACKEND_URL}/subjects`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSubjects(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const addSubject = () => {
+  const addSubject = async () => {
     if (!subjectName.trim()) return alert('Please enter a valid subject name!');
-    axios.post(`${BACKEND_URL}/subjects`, {
-      name: subjectName.trim(),
-      difficulty,
-      progress: 0,
-    })
-    .then(() => {
+    try {
+      const token = await getToken();
+      await axios.post(`${BACKEND_URL}/subjects`, {
+        name: subjectName.trim(),
+        difficulty,
+        progress: 0
+      }, { headers: { Authorization: `Bearer ${token}` }});
       setSubjectName('');
       setDifficulty('Easy');
       fetchSubjects();
-    })
-    .catch(err => console.log(err));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const incrementProgress = (id, by = 10) => {
+  const updateSubject = async (subject) => {
+    try {
+      const token = await getToken();
+      await axios.put(`${BACKEND_URL}/subjects/${subject.id}`, subject, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const incrementProgress = async (id, by = 10) => {
     setSubjects(prev =>
       prev.map(sub => {
         if (sub.id === id) {
           const newProgress = Math.min(sub.progress + by, 100);
-          axios.put(`${BACKEND_URL}/subjects/${id}`, { ...sub, progress: newProgress })
-            .catch(err => console.log(err));
+          updateSubject({ ...sub, progress: newProgress });
           return { ...sub, progress: newProgress };
         }
         return sub;
@@ -75,28 +89,22 @@ export default function Academic() {
     );
   };
 
-  const deleteSubject = (id) => {
-    const isWeb = typeof window !== 'undefined' && window.confirm;
-    if (isWeb) {
-      if (window.confirm('Are you sure you want to delete this subject?')) {
-        axios.delete(`${BACKEND_URL}/subjects/${id}`)
-          .then(() => setSubjects(prev => prev.filter(sub => sub.id !== id)))
-          .catch(err => console.log(err));
-      }
-    } else {
-      Alert.alert('Delete Subject', 'Are you sure?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: async () => {
-          try {
-            await axios.delete(`${BACKEND_URL}/subjects/${id}`);
-            setSubjects(prev => prev.filter(sub => sub.id !== id));
-          } catch (err) {
-            console.log(err);
-            alert('Failed to delete subject');
-          }
-        }}
-      ]);
-    }
+  const deleteSubject = async (id) => {
+    Alert.alert('Delete Subject', 'Are you sure?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => {
+        try {
+          const token = await getToken();
+          await axios.delete(`${BACKEND_URL}/subjects/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setSubjects(prev => prev.filter(sub => sub.id !== id));
+        } catch (err) {
+          console.log(err);
+          alert('Failed to delete subject');
+        }
+      }}
+    ]);
   };
 
   const startEditing = (sub) => {
@@ -105,17 +113,18 @@ export default function Academic() {
     setEditDifficulty(sub.difficulty);
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editName.trim()) return alert('Name cannot be empty!');
     const updated = { ...subjects.find(s => s.id === editingId), name: editName.trim(), difficulty: editDifficulty };
-    axios.put(`${BACKEND_URL}/subjects/${editingId}`, updated)
-      .then(() => {
-        setEditingId(null);
-        setEditName('');
-        setEditDifficulty('Easy');
-        fetchSubjects();
-      })
-      .catch(err => console.log(err));
+    try {
+      await updateSubject(updated);
+      setEditingId(null);
+      setEditName('');
+      setEditDifficulty('Easy');
+      fetchSubjects();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -160,7 +169,6 @@ export default function Academic() {
             </View>
           </View>
 
-          {/* Progress Bar */}
           <Progress.Bar
             progress={item.progress / 100}
             width={null}
@@ -170,7 +178,6 @@ export default function Academic() {
           />
           <Text style={{marginTop:5, color: theme.secondaryText}}>{item.progress}% completed</Text>
 
-          {/* Weekly Checklist */}
           <View style={{flexDirection:'row', alignItems:'center', marginTop:5}}>
             {['M','T','W','Th','F'].map((day, idx) => (
               <TouchableOpacity
@@ -201,7 +208,6 @@ export default function Academic() {
       <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView contentContainerStyle={styles.container}>
           
-          {/* Header */}
           <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:15}}>
             <View style={{flexDirection:'row', alignItems:'center'}}>
               <Text style={[styles.dashboardTitle, { color: theme.text }]}>Academic Dashboard</Text>
@@ -235,13 +241,14 @@ export default function Academic() {
 
           {/* Subjects List */}
           <FlatList
-            data={subjects.filter(sub => sub && sub.id !== undefined)}
+            data={subjects}
             keyExtractor={item => item.id.toString()}
             renderItem={renderItem}
             ListEmptyComponent={<Text style={{textAlign:'center', marginTop:20, color: theme.secondaryText}}>No subjects yet. Add one above!</Text>}
             scrollEnabled={false}
             style={{marginTop:15}}
           />
+
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
