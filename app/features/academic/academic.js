@@ -5,8 +5,9 @@ import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import {
-  Alert, FlatList, Image, KeyboardAvoidingView, Platform, ScrollView, StatusBar,
-  StyleSheet, Switch, Text, TextInput, TouchableOpacity, View
+  FlatList, KeyboardAvoidingView, Platform, StatusBar,
+  StyleSheet,
+  Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,9 +20,10 @@ export default function Academic() {
   const [editName, setEditName] = useState('');
   const [editDifficulty, setEditDifficulty] = useState('Easy');
   const [darkMode, setDarkMode] = useState(false);
+
+  const BACKEND_URL = 'http://127.0.0.1:5000/academic'; // update if using device: local IP
   const insets = useSafeAreaInsets();
 
-  const BACKEND_URL = 'http://127.0.0.1:5000';
   const theme = darkMode ? Palettes.academic.dark : Palettes.academic.light;
 
   const difficultyColors = {
@@ -34,96 +36,96 @@ export default function Academic() {
     fetchSubjects();
   }, []);
 
-  const getToken = async () => await AsyncStorage.getItem('token');
-
+  // --------- FETCH TASKS FROM BACKEND ----------
   const fetchSubjects = async () => {
     try {
-      const token = await getToken();
-      const res = await axios.get(`${BACKEND_URL}/subjects`, {
+      const token = await AsyncStorage.getItem('token');
+      const res = await axios.get(`${BACKEND_URL}/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setSubjects(Array.isArray(res.data) ? res.data : []);
+      setSubjects(res.data);
     } catch (err) {
       console.log(err);
+      alert('Failed to fetch tasks from backend');
     }
   };
 
+  // --------- ADD NEW TASK ----------
   const addSubject = async () => {
     if (!subjectName.trim()) return alert('Please enter a valid subject name!');
     try {
-      const token = await getToken();
-      await axios.post(`${BACKEND_URL}/subjects`, {
-        name: subjectName.trim(),
-        difficulty,
-        progress: 0
-      }, { headers: { Authorization: `Bearer ${token}` }});
+      const token = await AsyncStorage.getItem('token');
+      await axios.post(`${BACKEND_URL}/`, {
+        subject: subjectName.trim(),
+        task_name: 'Initial Task',
+        deadline: new Date().toISOString(),
+        completed: false
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setSubjectName('');
       setDifficulty('Easy');
       fetchSubjects();
     } catch (err) {
       console.log(err);
+      alert('Failed to add task');
     }
   };
 
-  const updateSubject = async (subject) => {
+  // --------- TOGGLE COMPLETION / UPDATE TASK ----------
+  const toggleCompleted = async (id, currentCompleted) => {
     try {
-      const token = await getToken();
-      await axios.put(`${BACKEND_URL}/subjects/${subject.id}`, subject, {
+      const token = await AsyncStorage.getItem('token');
+      const task = subjects.find(s => s.id === id);
+      await axios.put(`${BACKEND_URL}/${id}`, { ...task, completed: !currentCompleted }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      fetchSubjects();
     } catch (err) {
       console.log(err);
+      alert('Failed to update task');
     }
   };
 
-  const incrementProgress = async (id, by = 10) => {
-    setSubjects(prev =>
-      prev.map(sub => {
-        if (sub.id === id) {
-          const newProgress = Math.min(sub.progress + by, 100);
-          updateSubject({ ...sub, progress: newProgress });
-          return { ...sub, progress: newProgress };
-        }
-        return sub;
-      })
-    );
-  };
-
+  // --------- DELETE TASK ----------
   const deleteSubject = async (id) => {
-    Alert.alert('Delete Subject', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete', style: 'destructive', onPress: async () => {
-        try {
-          const token = await getToken();
-          await axios.delete(`${BACKEND_URL}/subjects/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          setSubjects(prev => prev.filter(sub => sub.id !== id));
-        } catch (err) {
-          console.log(err);
-          alert('Failed to delete subject');
-        }
-      }}
-    ]);
+    const isWeb = typeof window !== 'undefined' && window.confirm;
+    if (isWeb && !window.confirm('Are you sure you want to delete this subject?')) return;
+
+    try {
+      const token = await AsyncStorage.getItem('token');
+      await axios.delete(`${BACKEND_URL}/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSubjects(prev => prev.filter(sub => sub.id !== id));
+    } catch (err) {
+      console.log(err);
+      alert('Failed to delete task');
+    }
   };
 
+  // --------- EDIT TASK ----------
   const startEditing = (sub) => {
     setEditingId(sub.id);
-    setEditName(sub.name);
+    setEditName(sub.subject);
     setEditDifficulty(sub.difficulty);
   };
 
   const saveEdit = async () => {
     if (!editName.trim()) return alert('Name cannot be empty!');
-    const updated = { ...subjects.find(s => s.id === editingId), name: editName.trim(), difficulty: editDifficulty };
+    const updated = { ...subjects.find(s => s.id === editingId), subject: editName.trim(), difficulty: editDifficulty };
     try {
-      await updateSubject(updated);
+      const token = await AsyncStorage.getItem('token');
+      await axios.put(`${BACKEND_URL}/${editingId}`, updated, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setEditingId(null);
       setEditName('');
       setEditDifficulty('Easy');
       fetchSubjects();
     } catch (err) {
       console.log(err);
+      alert('Failed to update task');
     }
   };
 
@@ -155,8 +157,8 @@ export default function Academic() {
       ) : (
         <>
           <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-            <TouchableOpacity onPress={() => incrementProgress(item.id)}>
-              <Text style={[styles.subjectName, { color: theme.text }]}>{item.name}</Text>
+            <TouchableOpacity onPress={() => toggleCompleted(item.id, item.completed)}>
+              <Text style={[styles.subjectName, { color: theme.text }]}>{item.subject}</Text>
             </TouchableOpacity>
             <View style={{flexDirection:'row', alignItems:'center'}}>
               <Text style={[styles.difficulty, { color: theme.secondaryText }]}>{item.difficulty}</Text>
@@ -168,35 +170,14 @@ export default function Academic() {
               </TouchableOpacity>
             </View>
           </View>
-
           <Progress.Bar
-            progress={item.progress / 100}
+            progress={item.completed ? 1 : 0}
             width={null}
             color={difficultyColors[item.difficulty] || theme.accent}
             borderRadius={6}
             style={{marginTop:5}}
           />
-          <Text style={{marginTop:5, color: theme.secondaryText}}>{item.progress}% completed</Text>
-
-          <View style={{flexDirection:'row', alignItems:'center', marginTop:5}}>
-            {['M','T','W','Th','F'].map((day, idx) => (
-              <TouchableOpacity
-                key={idx}
-                onPress={() => incrementProgress(item.id, 20)}
-                style={{ alignItems:'center', marginRight:8 }}
-              >
-                <View style={{
-                  width: 16,
-                  height:16,
-                  borderRadius:8,
-                  backgroundColor: idx+1 <= Math.ceil(item.progress / 20)
-                    ? (difficultyColors[item.difficulty] || theme.accent)
-                    : '#ccc'
-                }}/>
-                <Text style={{color: theme.secondaryText, fontSize:10, marginTop:2}}>{day}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Text style={{marginTop:5, color: theme.secondaryText}}>{item.completed ? 'Completed' : 'Incomplete'}</Text>
         </>
       )}
     </View>
@@ -206,23 +187,7 @@ export default function Academic() {
     <SafeAreaView style={{flex:1, backgroundColor: theme.background, paddingTop: insets.top}}>
       <StatusBar barStyle={darkMode ? "light-content" : "dark-content"} backgroundColor={theme.background} />
       <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-        <ScrollView contentContainerStyle={styles.container}>
-          
-          <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', marginBottom:15}}>
-            <View style={{flexDirection:'row', alignItems:'center'}}>
-              <Text style={[styles.dashboardTitle, { color: theme.text }]}>Academic Dashboard</Text>
-              <Image 
-                source={require('../../../assets/images/undraw_studying.png')} 
-                style={styles.profileImage} 
-              />
-            </View>
-            <View style={{flexDirection:'row', alignItems:'center'}}>
-              <Text style={{color: theme.secondaryText, marginRight:5}}>{darkMode ? 'Dark' : 'Light'}</Text>
-              <Switch value={darkMode} onValueChange={setDarkMode} thumbColor={theme.accent} />
-            </View>
-          </View>
-
-          {/* Add Subject Form */}
+        <View style={{padding:15}}>
           <TextInput
             value={subjectName}
             onChangeText={setSubjectName}
@@ -230,7 +195,7 @@ export default function Academic() {
             placeholderTextColor={theme.secondaryText}
             style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]}
           />
-          <Picker selectedValue={difficulty} onValueChange={setDifficulty} style={[styles.picker, { backgroundColor: theme.inputBackground, color: theme.text }]}>
+          <Picker selectedValue={difficulty} onValueChange={setDifficulty} style={[styles.picker, { backgroundColor: theme.inputBackground, color: theme.text }]} >
             <Picker.Item label="Easy" value="Easy" />
             <Picker.Item label="Medium" value="Medium" />
             <Picker.Item label="Hard" value="Hard" />
@@ -238,27 +203,19 @@ export default function Academic() {
           <TouchableOpacity style={[styles.addButton, { backgroundColor: theme.accent }]} onPress={addSubject}>
             <Text style={{ color: theme.buttonText, fontWeight:'bold' }}>Add Subject</Text>
           </TouchableOpacity>
-
-          {/* Subjects List */}
           <FlatList
             data={subjects}
             keyExtractor={item => item.id.toString()}
             renderItem={renderItem}
             ListEmptyComponent={<Text style={{textAlign:'center', marginTop:20, color: theme.secondaryText}}>No subjects yet. Add one above!</Text>}
-            scrollEnabled={false}
-            style={{marginTop:15}}
           />
-
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding:15, paddingBottom:50 },
-  dashboardTitle: { fontSize:20, fontWeight:'bold' },
-  profileImage: { width:24, height:24, borderRadius:12, marginLeft:8 },
   input: { borderWidth:1, borderColor:'#ddd', padding:10, marginBottom:10, borderRadius:12 },
   picker: { borderWidth:1, borderColor:'#ddd', marginBottom:10, borderRadius:12 },
   addButton: { padding:12, borderRadius:12, alignItems:'center', marginBottom:10 },
@@ -267,5 +224,5 @@ const styles = StyleSheet.create({
   difficulty: { fontWeight:'bold', marginRight:5 },
   iconButton: { padding:6, borderRadius:8, marginLeft:5 },
   saveButton: { padding:10, borderRadius:12, alignItems:'center', flex:1, marginRight:5 },
-  deleteButton: { padding:10, borderRadius:12, alignItems:'center', flex:1 },
+  deleteButton: { padding:10, borderRadius:12, alignItems:'center', flex:1 }
 });

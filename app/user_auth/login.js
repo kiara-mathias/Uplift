@@ -12,20 +12,47 @@ export default function Login() {
   const { darkMode } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (email && password) {
-      await AsyncStorage.setItem('loggedIn', 'true');
-      router.replace('/(tabs)'); // <-- go to Home tab
-    } else {
+    if (!email || !password) {
       Alert.alert('Error', 'Please enter email and password.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://127.0.0.1:5000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token and username
+        await AsyncStorage.setItem('access_token', data.access_token);
+        await AsyncStorage.setItem('username', data.username || email); // fallback to email
+        await AsyncStorage.setItem('loggedIn', 'true'); // optional flag
+
+        router.replace('/(tabs)'); // redirect to Home
+      } else {
+        Alert.alert('Login Failed', data.error || 'Something went wrong');
+      }
+    } catch (error) {
+      console.log('Login error:', error);
+      Alert.alert('Error', 'Unable to connect to server.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <View style={[styles.container, { backgroundColor: darkMode ? '#121212' : '#f5f9ff' }]}>
       <Animatable.Text animation="fadeInDown" style={[styles.title, { color: darkMode ? '#fff' : '#222' }]}>
-        Welcome Back 👋
+        Login
       </Animatable.Text>
 
       <Animatable.View animation="fadeInUp" delay={200} style={[styles.card, { backgroundColor: darkMode ? '#232347' : '#fff' }]}>
@@ -46,8 +73,8 @@ export default function Login() {
           onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+          <Text style={styles.buttonText}>{loading ? 'Logging in...' : 'Login'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.signupButton} onPress={() => router.push('/user_auth/signup')}>
