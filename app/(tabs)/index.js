@@ -1,7 +1,8 @@
 import { Palettes } from '@/constants/Colors';
 import { useTheme } from '@/context/ThemeContext';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient'; // <-- import this
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,22 +21,51 @@ export default function Home() {
     { label: 'Hobbies', route: '/hobbies/hobbies-home', icon: 'brush', colors: ['#FF69B4', '#FFB6C1'] },
   ];
 
+  // Logout function
+  const handleLogout = async () => {
+    console.log('Logout button pressed');
+    try {
+      console.log('Logging out...');
+      // Clear all stored authentication data
+      await AsyncStorage.removeItem('access_token');
+      await AsyncStorage.removeItem('username');
+      await AsyncStorage.clear(); // Clear everything to be safe
+      console.log('AsyncStorage cleared');
+      
+      // Small delay to ensure AsyncStorage is fully cleared
+      setTimeout(() => {
+        console.log('Navigating to landing page...');
+        router.replace('/');
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
   return (
     <LinearGradient
       colors={darkMode ? ['#232347', '#000'] : ['#f3f4fe', '#fff']}
       style={[styles.gradient, { paddingTop: insets.top }]}
     >
       <ScrollView contentContainerStyle={{ padding: 24 }}>
-        <View style={styles.toggleRow}>
-          <Text style={{ color: theme.text, fontWeight: '700', fontSize: 18, marginRight: 8 }}>Dark Mode</Text>
-          <Switch
-            value={darkMode}
-            onValueChange={setDarkMode}
-            trackColor={{ false: '#ccc', true: theme.accent }}
-            thumbColor={darkMode ? theme.accent : '#fff'}
-            style={styles.switch}
-          />
+        {/* Top Row: Dark Mode Toggle + Logout */}
+        <View style={styles.topRow}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: theme.text, fontWeight: '700', fontSize: 18, marginRight: 8 }}>Dark Mode</Text>
+            <Switch
+              value={darkMode}
+              onValueChange={setDarkMode}
+              trackColor={{ false: '#ccc', true: theme.accent }}
+              thumbColor={darkMode ? theme.accent : '#fff'}
+              style={styles.switch}
+            />
+          </View>
+          <TouchableOpacity onPress={handleLogout}>
+            <Text style={{ color: theme.accent, fontWeight: '700', fontSize: 16 }}>Logout</Text>
+          </TouchableOpacity>
         </View>
+
         <Text style={[styles.welcome, { color: theme.text }]}>Welcome 👋</Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           What would you like to focus on today?
@@ -70,10 +100,10 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  toggleRow: {
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     marginBottom: 18,
   },
   switch: {
